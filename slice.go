@@ -1,6 +1,6 @@
-package base_tool
+package rp_kit
 
-import "github.com/tricobbler/base-tool/cast"
+import "github.com/tricobbler/rp-kit/cast"
 
 //查询值是否在切片存在
 func InSlice(value interface{}, list interface{}) bool {

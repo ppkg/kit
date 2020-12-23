@@ -1,8 +1,6 @@
-package base_tool
+package rp_kit
 
-import (
-	"testing"
-)
+import "testing"
 
 func Benchmark_GetGuid32(b *testing.B) {
 	for i := 0; i < b.N; i++ {
@@ -16,15 +14,9 @@ func Benchmark_RunFuncName(b *testing.B) {
 	}
 }
 
-func Benchmark_PrintJSON(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		PrintJSON(map[string]string{"nihao": "你好", "shijie": "世界"})
-	}
-}
-
 func Benchmark_GetMd5String(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		GetMd5String("9d9dce8ec1654ee28ad50ede7e04247b")
+		GetMd5("9d9dce8ec1654ee28ad50ede7e04247b")
 	}
 }
 

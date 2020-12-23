@@ -1,10 +1,10 @@
-package base_tool
+package rp_kit
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"log"
+	"github.com/google/uuid"
 	"math"
 	"math/rand"
 	"net/url"
@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
@@ -29,35 +28,6 @@ func RunFuncName(skip ...int) string {
 	runtime.Callers(skip[0], pc)
 
 	return runtime.FuncForPC(pc[0]).Name()
-}
-
-//URL字符解码
-func UrlDecode(encodeStr string) string {
-	unescapeUrl, _ := url.PathUnescape(encodeStr)
-	return unescapeUrl
-}
-
-//PrintJSON 将struct序列化json打印日志
-func PrintJSON(inter interface{}) {
-	bt, _ := json.Marshal(inter)
-	log.Println("json：", string(bt))
-}
-
-//生成md5字串
-func GetMd5String(s string) string {
-	h := md5.New()
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-//生成32位Guid字串
-func GetGuid32() string {
-	return strings.ReplaceAll(GetGuid36(), "-", "")
-}
-
-//生成36位Guid字串
-func GetGuid36() string {
-	return uuid.New().String()
 }
 
 //元转分
@@ -81,6 +51,52 @@ func GetRandomString(l int) string {
 	return string(result)
 }
 
+// 计算地球上两点间距离
+func EarthDistance(lat1, lng1, lat2, lng2 float64) float64 {
+	radius := 6371.0 // 6378137
+	rad := math.Pi / 180.0
+
+	lat1 = lat1 * rad
+	lng1 = lng1 * rad
+	lat2 = lat2 * rad
+	lng2 = lng2 * rad
+
+	theta := lng2 - lng1
+	dist := math.Acos(math.Sin(lat1)*math.Sin(lat2) + math.Cos(lat1)*math.Cos(lat2)*math.Cos(theta))
+
+	return dist * radius
+}
+
+
+//URL字符解码
+func UrlDecode(encodeStr string) string {
+	unescapeUrl, _ := url.PathUnescape(encodeStr)
+	return unescapeUrl
+}
+
+//生成json字符串
+func JsonEncode(i interface{}) string {
+	bt, _ := json.Marshal(i)
+	return string(bt)
+}
+
+//生成md5字串
+func GetMd5(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+//生成32位Guid字串
+func GetGuid32() string {
+	return strings.ReplaceAll(GetGuid36(), "-", "")
+}
+
+//生成36位Guid字串
+func GetGuid36() string {
+	return uuid.New().String()
+}
+
 //全角转换半角
 func DBCtoSBC(s string) string {
 	retstr := ""
@@ -98,20 +114,4 @@ func DBCtoSBC(s string) string {
 		}
 	}
 	return retstr
-}
-
-// 计算地球上两点间距离
-func EarthDistance(lat1, lng1, lat2, lng2 float64) float64 {
-	radius := 6371.0 // 6378137
-	rad := math.Pi / 180.0
-
-	lat1 = lat1 * rad
-	lng1 = lng1 * rad
-	lat2 = lat2 * rad
-	lng2 = lng2 * rad
-
-	theta := lng2 - lng1
-	dist := math.Acos(math.Sin(lat1)*math.Sin(lat2) + math.Cos(lat1)*math.Cos(lat2)*math.Cos(theta))
-
-	return dist * radius
 }
