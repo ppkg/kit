@@ -39,6 +39,15 @@ func YuanToFen(f float64) int {
 	return int(res)
 }
 
+//分转元
+func FenToYuan(i int64) float64 {
+	decimalValue := decimal.NewFromInt(i)
+	decimalValue = decimalValue.Div(decimal.NewFromInt(100))
+	res, _ := decimalValue.Float64()
+
+	return res
+}
+
 //获取随机字符串，指定长度
 func GetRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
