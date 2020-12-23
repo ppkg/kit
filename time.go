@@ -14,7 +14,7 @@ const (
 	TIME_LAYOUT_SHORT    = "15:04"
 )
 
-//获取当前时间
+//获取当前标准格式时间
 func GetTimeNow(time2 ...time.Time) string {
 	if len(time2) == 0 {
 		return time.Now().Format(DATETIME_LAYOUT)
