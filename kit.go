@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"github.com/maybgit/glog"
 )
 
 // 获取正在运行的函数名
@@ -28,6 +29,14 @@ func RunFuncName(skip ...int) string {
 	runtime.Callers(skip[0], pc)
 
 	return runtime.FuncForPC(pc[0]).Name()
+}
+
+func CatchPanic() {
+	if err := recover(); err != nil {
+		stack := make([]byte, 4<<10) //4KB
+		length := runtime.Stack(stack, false)
+		glog.Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
+	}
 }
 
 //元转分
