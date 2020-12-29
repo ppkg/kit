@@ -26,6 +26,32 @@ func Benchmark_GetRandomString(b *testing.B) {
 	}
 }
 
+func TestUrlEncode(t *testing.T) {
+	type args struct {
+		encodeStr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name:"UrlEncode",
+			args: args{
+				encodeStr: "测试urlencode+",
+			},
+			want:"%E6%B5%8B%E8%AF%95urlencode+",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := UrlEncode(tt.args.encodeStr); got != tt.want {
+				t.Errorf("UrlEncode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_UrlDecode(t *testing.T) {
 	type args struct {
 		org string
@@ -142,6 +168,49 @@ func Test_FenToYuan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := FenToYuan(tt.args.f); got != tt.want {
 				t.Errorf("YuanToFen() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetGuid32(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{
+			name:"GetGuid32",
+			want:"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetGuid32(); got != tt.want {
+				t.Errorf("GetGuid32() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestJsonEncode(t *testing.T) {
+	type args struct {
+		i interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name:"JsonEncode",
+			args: args{i: map[string]string{"hello":"world","foo":"bar"}},
+			want:`{"foo":"bar","hello":"world"}`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JsonEncode(tt.args.i); got != tt.want {
+				t.Errorf("JsonEncode() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -85,6 +85,10 @@ func EarthDistance(lat1, lng1, lat2, lng2 float64) float64 {
 	return dist * radius
 }
 
+//字符串转码
+func UrlEncode(encodeStr string) string {
+	return url.PathEscape(encodeStr)
+}
 
 //URL字符解码
 func UrlDecode(encodeStr string) string {
@@ -94,8 +98,13 @@ func UrlDecode(encodeStr string) string {
 
 //生成json字符串
 func JsonEncode(i interface{}) string {
+	return string(JsonEncodeByte(i))
+}
+
+//生成json byte切片
+func JsonEncodeByte(i interface{}) []byte {
 	bt, _ := json.Marshal(i)
-	return string(bt)
+	return bt
 }
 
 //生成md5字串
