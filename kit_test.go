@@ -26,6 +26,20 @@ func Benchmark_GetRandomString(b *testing.B) {
 	}
 }
 
+func Benchmark_JsonEncode(b *testing.B) {
+	str := map[string]string{"hello": "world", "foo": "bar"}
+	for i := 0; i < b.N; i++ {
+		JsonEncode(str)
+	}
+}
+
+func Benchmark_JsonEncodeByte(b *testing.B) {
+	str := map[string]string{"hello": "world", "foo": "bar"}
+	for i := 0; i < b.N; i++ {
+		JsonEncodeByte(str)
+	}
+}
+
 func TestUrlEncode(t *testing.T) {
 	type args struct {
 		encodeStr string
@@ -36,11 +50,11 @@ func TestUrlEncode(t *testing.T) {
 		want string
 	}{
 		{
-			name:"UrlEncode",
+			name: "UrlEncode",
 			args: args{
 				encodeStr: "测试urlencode+",
 			},
-			want:"%E6%B5%8B%E8%AF%95urlencode+",
+			want: "%E6%B5%8B%E8%AF%95urlencode+",
 		},
 	}
 	for _, tt := range tests {
@@ -173,14 +187,14 @@ func Test_FenToYuan(t *testing.T) {
 	}
 }
 
-func TestGetGuid32(t *testing.T) {
+func Test_GetGuid32(t *testing.T) {
 	tests := []struct {
 		name string
 		want string
 	}{
 		{
-			name:"GetGuid32",
-			want:"",
+			name: "GetGuid32",
+			want: "",
 		},
 	}
 	for _, tt := range tests {
@@ -192,7 +206,7 @@ func TestGetGuid32(t *testing.T) {
 	}
 }
 
-func TestJsonEncode(t *testing.T) {
+func Test_JsonEncode(t *testing.T) {
 	type args struct {
 		i interface{}
 	}
@@ -202,9 +216,9 @@ func TestJsonEncode(t *testing.T) {
 		want string
 	}{
 		{
-			name:"JsonEncode",
-			args: args{i: map[string]string{"hello":"world","foo":"bar"}},
-			want:`{"foo":"bar","hello":"world"}`,
+			name: "JsonEncode",
+			args: args{i: map[string]string{"hello": "world", "foo": "bar"}},
+			want: `{"foo":"bar","hello":"world"}`,
 		},
 	}
 	for _, tt := range tests {
