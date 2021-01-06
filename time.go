@@ -1,7 +1,6 @@
 package rp_kit
 
 import (
-	"log"
 	"time"
 )
 
@@ -19,6 +18,6 @@ func GetTimeNow(time2 ...time.Time) string {
 	if len(time2) == 0 {
 		return time.Now().Format(DATETIME_LAYOUT)
 	}
-	log.Println(RunFuncName())
+
 	return time2[0].Format(DATETIME_LAYOUT)
 }
