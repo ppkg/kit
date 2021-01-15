@@ -16,6 +16,10 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+var (
+	IsDebug bool
+)
+
 // 获取正在运行的函数名
 // @param skip 函数调用层级，1：当前调用函数，2：当前函数上层调用函数，以此类推
 func RunFuncName(skip ...int) string {

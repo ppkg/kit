@@ -1,27 +1,52 @@
 package rp_kit
 
 import (
+	"github.com/go-redis/redis"
+	"github.com/go-xorm/xorm"
+	"github.com/limitedlee/microservice/common/config"
 	"testing"
 )
 
-func Test_GetRedisConn(t *testing.T) {
+func Test_NewRedisEngine(t *testing.T) {
 	type args struct {
-		dsn []string
+		dsn string
 	}
 	tests := []struct {
 		name string
 		args args
 	}{
 		{
-			name: "GetRedisConn",
-			args: args{
-				dsn: []string{},
-			},
+			name: "创建redis连接",
+			args: args{dsn: config.GetString("redis.Addr") + "|" + config.GetString("redis.Password") + "|" + config.GetString("redis.DB")},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := GetRedisConn(tt.args.dsn...).Ping().Err(); err != nil {
+			got := NewRedisEngine(tt.args.dsn)
+			if err := got.Engine.(*redis.Client).Ping().Err(); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
+
+func TestNewDBEngine(t *testing.T) {
+	type args struct {
+		dsn string
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "创建mysql连接",
+			args: args{dsn: config.GetString("mysql.test")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewDBEngine(tt.args.dsn)
+			if err := got.Engine.(*xorm.Engine).Ping(); err != nil {
 				t.Error(err)
 			}
 		})

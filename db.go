@@ -1,52 +1,85 @@
 package rp_kit
 
 import (
-	"log"
 	"strings"
 	"time"
 
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"github.com/limitedlee/microservice/common"
-	"github.com/limitedlee/microservice/common/config"
 	"github.com/maybgit/glog"
 	"github.com/tricobbler/rp-kit/cast"
 )
 
-var (
-	redisHandle *redis.Client
-)
+type dbEngine struct {
+	Engine interface{}
+	dsn    string
+}
 
-//获取redis集群客户端
-//dsn: addr:port|pwd|db
-func GetRedisConn(dsn ...string) *redis.Client {
-	if redisHandle != nil {
-		_, err := redisHandle.Ping().Result()
-		if err == nil {
-			return redisHandle
+func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval int) {
+	defer CatchPanic()
+
+	for {
+		time.Sleep(time.Duration(interval) * time.Second)
+
+		retryTimes := 0
+	reconnect:
+		var (
+			err  error
+			desc string
+		)
+		switch e.Engine.(type) {
+		case *xorm.Engine:
+			desc = "mysql"
+			if IsDebug {
+				err = e.Engine.(*xorm.Engine).Ping()
+			} else {
+				err = e.Engine.(*xorm.Engine).DB().Ping()
+			}
+		case *redis.Client:
+			desc = "redis"
+			err = e.Engine.(*redis.Client).Ping().Err()
+		}
+
+		if err != nil {
+			if retryTimes < maxRetryTimes {
+				retryTimes++
+				glog.Infof(desc+"断开重连, try %v...", retryTimes)
+				time.Sleep(time.Duration(retryTimes) * time.Second)
+				e.Engine = e.ResetEngine(f)
+				goto reconnect
+			}
+
+			Alert("【" + common.PbConfig.Grpc.Appid + "】" + desc + "连接被关闭未能恢复，" + err.Error())
 		}
 	}
+}
 
-	var (
-		db   int
-		addr string
-		pwd  string
-	)
-	if len(dsn) > 0 {
-		dsnSlice := strings.Split(dsn[0], "|")
-		addr = dsnSlice[0]
-		pwd = dsnSlice[1]
-		db = cast.ToInt(dsnSlice[2])
-	} else {
-		db = cast.ToInt(config.GetString("redis.DB"))
-		addr = config.GetString("redis.Addr")
-		pwd = config.GetString("redis.Password")
+func NewRedisEngine(dsn string) *dbEngine {
+	e := &dbEngine{
+		dsn: dsn,
+	}
+	e.NewRedisConn()
+	return e
+}
+
+func (e *dbEngine) NewRedisConnInterface() interface{} {
+	return e.NewRedisConn()
+}
+
+//获取redis集群客户端
+func (e *dbEngine) NewRedisConn() *redis.Client {
+	dsnSlice := strings.Split(e.dsn, "|")
+	if len(dsnSlice) < 3 {
+		glog.Error("redis配置不正确，", e.dsn)
+		panic("redis配置不正确")
 	}
 
-	redisHandle = redis.NewClient(&redis.Options{
-		Addr:         addr,
-		Password:     pwd,
-		DB:           db,
+	redisHandle := redis.NewClient(&redis.Options{
+		Addr:         dsnSlice[0],
+		Password:     dsnSlice[1],
+		DB:           cast.ToInt(dsnSlice[2]),
 		MinIdleConns: 20,
 		IdleTimeout:  60,
 		PoolSize:     200,
@@ -57,35 +90,48 @@ func GetRedisConn(dsn ...string) *redis.Client {
 		panic(err)
 	}
 
+	e.Engine = redisHandle
 	return redisHandle
 }
 
-type DBEngine interface {
-	Ping() error
-}
-
-func DBEngineCheck(engine DBEngine, newEngine func(...string) DBEngine, maxRetryTimes, interval int) {
-	defer CatchPanic()
-
-	for {
-		time.Sleep(time.Duration(interval) * time.Second)
-
-		retryTimes := 0
-	reconnect:
-		if err := engine.Ping(); err != nil {
-			if retryTimes < maxRetryTimes {
-				DBEngineReset(engine, newEngine)
-				retryTimes++
-				log.Printf("数据库重连, try %v...", retryTimes)
-				goto reconnect
-			}
-
-			Alert("【" + common.PbConfig.Grpc.Appid + "】数据库连接被关闭未能恢复，" + err.Error())
-		}
+func NewDBEngine(dsn string) *dbEngine {
+	e := &dbEngine{
+		dsn: dsn,
 	}
+	e.NewXormEngine()
+	return e
 }
 
-func DBEngineReset(engine DBEngine, newEngine func(...string) DBEngine) {
-	engine = nil
-	engine = newEngine()
+func (e *dbEngine) ResetEngine(f func() interface{}) interface{} {
+	return f()
+}
+
+func (e *dbEngine) NewXormEngineInterface() interface{} {
+	return e.NewXormEngine()
+}
+
+func (e *dbEngine) NewXormEngine() *xorm.Engine {
+	xormEngine, err := xorm.NewEngine("mysql", e.dsn)
+	if err != nil {
+		glog.Fatal("mysql connect fail", err)
+		panic(err)
+	}
+
+	if IsDebug {
+		xormEngine.ShowSQL()
+		xormEngine.ShowExecTime()
+	}
+
+	//空闲关闭时间
+	xormEngine.SetConnMaxLifetime(60 * time.Second)
+	//最大空闲连接
+	xormEngine.SetMaxIdleConns(10)
+	//最大连接数
+	xormEngine.SetMaxOpenConns(500)
+
+	// 设置时区
+	xormEngine.SetTZLocation(time.Local)
+
+	e.Engine = xormEngine
+	return xormEngine
 }
