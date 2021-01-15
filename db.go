@@ -12,6 +12,11 @@ import (
 	"github.com/tricobbler/rp-kit/cast"
 )
 
+var (
+	XormEngine  *xorm.Engine
+	RedisHandle *redis.Client
+)
+
 type dbEngine struct {
 	Engine interface{}
 	dsn    string
@@ -47,7 +52,14 @@ func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval i
 				retryTimes++
 				glog.Infof(desc+"断开重连, try %v...", retryTimes)
 				time.Sleep(time.Duration(retryTimes) * time.Second)
-				e.Engine = e.ResetEngine(f)
+				engine := e.ResetEngine(f)
+				switch engine.(type) {
+				case *xorm.Engine:
+					XormEngine = engine.(*xorm.Engine)
+				case *redis.Client:
+					RedisHandle = engine.(*redis.Client)
+
+				}
 				goto reconnect
 			}
 
