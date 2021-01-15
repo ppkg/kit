@@ -15,5 +15,6 @@
 # vendor/
 
 .idea/*
+http/.idea/*
 *.sum
 *.toml
