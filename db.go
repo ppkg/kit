@@ -12,17 +12,12 @@ import (
 	"github.com/tricobbler/rp-kit/cast"
 )
 
-var (
-	XormEngine  *xorm.Engine
-	RedisHandle *redis.Client
-)
-
-type dbEngine struct {
+type DBEngine struct {
 	Engine interface{}
 	dsn    string
 }
 
-func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval int) {
+func (e *DBEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval int) {
 	defer CatchPanic()
 
 	for {
@@ -37,11 +32,7 @@ func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval i
 		switch e.Engine.(type) {
 		case *xorm.Engine:
 			desc = "mysql"
-			if IsDebug {
-				err = e.Engine.(*xorm.Engine).Ping()
-			} else {
-				err = e.Engine.(*xorm.Engine).DB().Ping()
-			}
+			err = e.Engine.(*xorm.Engine).DB().Ping()
 		case *redis.Client:
 			desc = "redis"
 			err = e.Engine.(*redis.Client).Ping().Err()
@@ -52,14 +43,8 @@ func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval i
 				retryTimes++
 				glog.Infof(desc+"断开重连, try %v...", retryTimes)
 				time.Sleep(time.Duration(retryTimes) * time.Second)
-				engine := e.ResetEngine(f)
-				switch engine.(type) {
-				case *xorm.Engine:
-					XormEngine = engine.(*xorm.Engine)
-				case *redis.Client:
-					RedisHandle = engine.(*redis.Client)
+				e.Engine = e.ResetEngine(f)
 
-				}
 				goto reconnect
 			}
 
@@ -68,20 +53,20 @@ func (e *dbEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval i
 	}
 }
 
-func NewRedisEngine(dsn string) *dbEngine {
-	e := &dbEngine{
+func NewRedisEngine(dsn string) *DBEngine {
+	e := &DBEngine{
 		dsn: dsn,
 	}
 	e.NewRedisConn()
 	return e
 }
 
-func (e *dbEngine) NewRedisConnInterface() interface{} {
+func (e *DBEngine) NewRedisConnInterface() interface{} {
 	return e.NewRedisConn()
 }
 
 //获取redis集群客户端
-func (e *dbEngine) NewRedisConn() *redis.Client {
+func (e *DBEngine) NewRedisConn() *redis.Client {
 	dsnSlice := strings.Split(e.dsn, "|")
 	if len(dsnSlice) < 3 {
 		glog.Error("redis配置不正确，", e.dsn)
@@ -106,23 +91,23 @@ func (e *dbEngine) NewRedisConn() *redis.Client {
 	return redisHandle
 }
 
-func NewDBEngine(dsn string) *dbEngine {
-	e := &dbEngine{
+func NewDBEngine(dsn string) *DBEngine {
+	e := &DBEngine{
 		dsn: dsn,
 	}
 	e.NewXormEngine()
 	return e
 }
 
-func (e *dbEngine) ResetEngine(f func() interface{}) interface{} {
+func (e *DBEngine) ResetEngine(f func() interface{}) interface{} {
 	return f()
 }
 
-func (e *dbEngine) NewXormEngineInterface() interface{} {
+func (e *DBEngine) NewXormEngineInterface() interface{} {
 	return e.NewXormEngine()
 }
 
-func (e *dbEngine) NewXormEngine() *xorm.Engine {
+func (e *DBEngine) NewXormEngine() *xorm.Engine {
 	xormEngine, err := xorm.NewEngine("mysql", e.dsn)
 	if err != nil {
 		glog.Fatal("mysql connect fail", err)

@@ -30,7 +30,7 @@ func Test_NewRedisEngine(t *testing.T) {
 	}
 }
 
-func TestNewDBEngine(t *testing.T) {
+func Test_NewDBEngine(t *testing.T) {
 	type args struct {
 		dsn string
 	}
