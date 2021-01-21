@@ -77,7 +77,7 @@ func (e *DBEngine) NewRedisConn() *redis.Client {
 		Addr:         dsnSlice[0],
 		Password:     dsnSlice[1],
 		DB:           cast.ToInt(dsnSlice[2]),
-		MinIdleConns: 20,
+		MinIdleConns: 10,
 		IdleTimeout:  60,
 		PoolSize:     200,
 	})
@@ -110,7 +110,7 @@ func (e *DBEngine) NewXormEngineInterface() interface{} {
 func (e *DBEngine) NewXormEngine() *xorm.Engine {
 	xormEngine, err := xorm.NewEngine("mysql", e.dsn)
 	if err != nil {
-		glog.Fatal("mysql connect fail", err)
+		glog.Error("mysql connect fail", err)
 		panic(err)
 	}
 
