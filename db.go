@@ -108,6 +108,11 @@ func (e *DBEngine) NewXormEngineInterface() interface{} {
 }
 
 func (e *DBEngine) NewXormEngine() *xorm.Engine {
+	if len(e.dsn) == 0 {
+		glog.Error("mysql配置不正确，", e.dsn)
+		panic("mysql配置不正确")
+	}
+
 	xormEngine, err := xorm.NewEngine("mysql", e.dsn)
 	if err != nil {
 		glog.Error("mysql connect fail", err)
