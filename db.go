@@ -17,6 +17,22 @@ type DBEngine struct {
 	dsn    string
 }
 
+func NewDBEngine(dsn string) *DBEngine {
+	e := &DBEngine{
+		dsn: dsn,
+	}
+	e.NewXormEngine()
+	return e
+}
+
+func NewRedisEngine(dsn string) *DBEngine {
+	e := &DBEngine{
+		dsn: dsn,
+	}
+	e.NewRedisConn()
+	return e
+}
+
 func (e *DBEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval int) {
 	defer CatchPanic()
 
@@ -53,19 +69,11 @@ func (e *DBEngine) DBEngineCheck(f func() interface{}, maxRetryTimes, interval i
 	}
 }
 
-func NewRedisEngine(dsn string) *DBEngine {
-	e := &DBEngine{
-		dsn: dsn,
-	}
-	e.NewRedisConn()
-	return e
+func (e *DBEngine) ResetEngine(f func() interface{}) interface{} {
+	return f()
 }
 
-func (e *DBEngine) NewRedisConnInterface() interface{} {
-	return e.NewRedisConn()
-}
-
-//获取redis集群客户端
+//获取redis客户端
 func (e *DBEngine) NewRedisConn() *redis.Client {
 	dsnSlice := strings.Split(e.dsn, "|")
 	if len(dsnSlice) < 3 {
@@ -91,22 +99,11 @@ func (e *DBEngine) NewRedisConn() *redis.Client {
 	return redisHandle
 }
 
-func NewDBEngine(dsn string) *DBEngine {
-	e := &DBEngine{
-		dsn: dsn,
-	}
-	e.NewXormEngine()
-	return e
+func (e *DBEngine) NewRedisConnInterface() interface{} {
+	return e.NewRedisConn()
 }
 
-func (e *DBEngine) ResetEngine(f func() interface{}) interface{} {
-	return f()
-}
-
-func (e *DBEngine) NewXormEngineInterface() interface{} {
-	return e.NewXormEngine()
-}
-
+//获取数据库客户端
 func (e *DBEngine) NewXormEngine() *xorm.Engine {
 	if len(e.dsn) == 0 {
 		glog.Error("mysql配置不正确，", e.dsn)
@@ -136,4 +133,8 @@ func (e *DBEngine) NewXormEngine() *xorm.Engine {
 
 	e.Engine = xormEngine
 	return xormEngine
+}
+
+func (e *DBEngine) NewXormEngineInterface() interface{} {
+	return e.NewXormEngine()
 }
