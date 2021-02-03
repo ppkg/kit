@@ -1,6 +1,8 @@
 package rp_kit
 
-import "testing"
+import (
+	"testing"
+)
 
 func Benchmark_GetGuid32(b *testing.B) {
 	for i := 0; i < b.N; i++ {
@@ -40,7 +42,43 @@ func Benchmark_JsonEncodeByte(b *testing.B) {
 	}
 }
 
-func TestUrlEncode(t *testing.T) {
+func Test_JsonDecode(t *testing.T) {
+	type args struct {
+		data []byte
+		v    interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "JsonDecode",
+			args: args{
+				data: []byte(`{"hello":"world","foo":"bar"}`),
+				v:    map[string]string{},
+			},
+			wantErr: false,
+		},
+		{
+			name: "JsonDecode",
+			args: args{
+				data: []byte(`{"hello":"world","foo":123},`),
+				v:    map[string]string{},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := JsonDecode(tt.args.data, &tt.args.v); (err != nil) != tt.wantErr {
+				t.Errorf("JsonDecode() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_UrlEncode(t *testing.T) {
 	type args struct {
 		encodeStr string
 	}

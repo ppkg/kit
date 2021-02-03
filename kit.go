@@ -111,6 +111,11 @@ func JsonEncodeByte(i interface{}) []byte {
 	return bt
 }
 
+//解析json字符串
+func JsonDecode(data []byte, v interface{}) error {
+	return json.Unmarshal(data, v)
+}
+
 //生成md5字串
 func GetMd5(s string) string {
 	h := md5.New()
