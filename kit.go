@@ -135,7 +135,11 @@ func DBCtoSBC(s string) string {
 }
 
 //设置上下文超时时间
-func SetTimeoutCtx(ctx context.Context, timeout time.Duration) context.Context {
-	ctx, _ = context.WithTimeout(ctx, timeout)
+func SetTimeoutCtx(ctx context.Context, timeout ...time.Duration) context.Context {
+	if len(timeout) == 0 {
+		timeout = []time.Duration{30 * time.Second}
+	}
+
+	ctx, _ = context.WithTimeout(ctx, timeout[0])
 	return ctx
 }
