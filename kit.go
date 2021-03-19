@@ -1,10 +1,10 @@
 package rp_kit
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/google/uuid"
 	"math"
 	"math/rand"
 	"net/url"
@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/maybgit/glog"
-	"github.com/shopspring/decimal"
 )
 
 var (
@@ -41,38 +41,6 @@ func CatchPanic() {
 		length := runtime.Stack(stack, false)
 		glog.Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
 	}
-}
-
-//元转分
-func YuanToFen(f interface{}) int {
-	var decimalValue decimal.Decimal
-	switch f.(type) {
-	case float32:
-		decimalValue = decimal.NewFromFloat32(f.(float32))
-		decimalValue = decimalValue.Mul(decimal.NewFromInt(100))
-	case float64:
-		decimalValue = decimal.NewFromFloat(f.(float64))
-		decimalValue = decimalValue.Mul(decimal.NewFromInt(100))
-	}
-
-	res, _ := decimalValue.Float64()
-	return int(res)
-}
-
-//分转元
-func FenToYuan(i interface{}) float64 {
-	var decimalValue decimal.Decimal
-	switch i.(type) {
-	case int32:
-		decimalValue = decimal.NewFromInt32(i.(int32))
-		decimalValue = decimalValue.Div(decimal.NewFromInt32(100))
-	case int64:
-		decimalValue = decimal.NewFromInt(i.(int64))
-		decimalValue = decimalValue.Div(decimal.NewFromInt(100))
-	}
-
-	res, _ := decimalValue.Float64()
-	return res
 }
 
 //获取随机字符串，指定长度
@@ -164,4 +132,10 @@ func DBCtoSBC(s string) string {
 		}
 	}
 	return retstr
+}
+
+//获取带超时时间的context
+func SetTimeoutCtx(timeout time.Duration) context.Context {
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	return ctx
 }
