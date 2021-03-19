@@ -1,7 +1,9 @@
 package rp_kit
 
 import (
+	"context"
 	"testing"
+	"time"
 )
 
 func Benchmark_GetGuid32(b *testing.B) {
@@ -197,6 +199,35 @@ func Test_JsonEncode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := JsonEncode(tt.args.i); got != tt.want {
 				t.Errorf("JsonEncode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSetTimeoutCtx(t *testing.T) {
+	type args struct {
+		ctx     context.Context
+		timeout time.Duration
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "SetTimeoutCtx",
+			args: args{
+				ctx:     context.Background(),
+				timeout: 3 * time.Second,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := SetTimeoutCtx(tt.args.ctx, tt.args.timeout)
+			if dd, ok := got.Deadline(); !ok {
+				t.Fatalf("set timeout context fail")
+			} else {
+				t.Log(dd.String())
 			}
 		})
 	}

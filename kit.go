@@ -134,8 +134,8 @@ func DBCtoSBC(s string) string {
 	return retstr
 }
 
-//获取带超时时间的context
-func GetTimeoutCtx(timeout time.Duration) context.Context {
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+//设置上下文超时时间
+func SetTimeoutCtx(ctx context.Context, timeout time.Duration) context.Context {
+	ctx, _ = context.WithTimeout(ctx, timeout)
 	return ctx
 }
