@@ -98,19 +98,24 @@ func JsonDecode(data []byte, v interface{}) error {
 	return json.Unmarshal(data, v)
 }
 
-//生成md5字串
+//生成md5字符串
 func GetMd5(s string) string {
 	h := md5.New()
 	h.Write([]byte(s))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-//生成32位Guid字串
+//生成16位md5字符串
+func GetMd516(s string) string {
+	return GetMd5(s)[8:24]
+}
+
+//生成32位Guid字符串
 func GetGuid32() string {
 	return strings.ReplaceAll(GetGuid36(), "-", "")
 }
 
-//生成36位Guid字串
+//生成36位Guid字符串
 func GetGuid36() string {
 	return uuid.New().String()
 }

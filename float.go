@@ -45,6 +45,9 @@ func FenToYuan(i interface{}) float64 {
 	case int64:
 		decimalValue = decimal.NewFromInt(i.(int64))
 		decimalValue = decimalValue.Div(decimal.NewFromInt(100))
+	case int:
+		decimalValue = decimal.NewFromInt(int64(i.(int)))
+		decimalValue = decimalValue.Div(decimal.NewFromInt(100))
 	default:
 		panic("can't suppot type")
 	}

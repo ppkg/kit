@@ -2,6 +2,7 @@ package rp_kit
 
 import (
 	"context"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -18,9 +19,15 @@ func Benchmark_RunFuncName(b *testing.B) {
 	}
 }
 
-func Benchmark_GetMd5String(b *testing.B) {
+func Benchmark_GetMd5(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		GetMd5("9d9dce8ec1654ee28ad50ede7e04247b")
+		GetMd5(strconv.Itoa(i))
+	}
+}
+
+func Benchmark_GetMd516(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		GetMd516(strconv.Itoa(i))
 	}
 }
 
