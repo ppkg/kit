@@ -239,3 +239,30 @@ func TestSetTimeoutCtx(t *testing.T) {
 		})
 	}
 }
+
+func TestJsonEncodeBeuty(t *testing.T) {
+	type args struct {
+		i interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "JsonEncodeBeuty",
+			args: args{i: map[string]string{"hello": "world", "foo": "bar"}},
+			want: `{
+	"foo": "bar",
+	"hello": "world"
+}`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := JsonEncodeBeuty(tt.args.i); got != tt.want {
+				t.Errorf("JsonEncodeBeuty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

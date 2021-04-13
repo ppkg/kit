@@ -87,6 +87,12 @@ func JsonEncode(i interface{}) string {
 	return string(JsonEncodeByte(i))
 }
 
+//生成美化后的json字符串
+func JsonEncodeBeuty(i interface{}) string {
+	bt, _ := json.MarshalIndent(i, "", "\t")
+	return string(bt)
+}
+
 //生成json byte切片
 func JsonEncodeByte(i interface{}) []byte {
 	bt, _ := json.Marshal(i)
