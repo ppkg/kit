@@ -1,10 +1,11 @@
-package rp_kit
+package kit
 
 import (
+	"testing"
+
 	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 	"github.com/limitedlee/microservice/common/config"
-	"testing"
 )
 
 func Test_NewRedisEngine(t *testing.T) {

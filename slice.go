@@ -1,4 +1,4 @@
-package rp_kit
+package kit
 
 import "github.com/gogrpc/kit/cast"
 

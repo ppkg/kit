@@ -6,11 +6,11 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/gogrpc/glog"
+	"github.com/gogrpc/kit"
+	"github.com/gogrpc/kit/cast"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/gogrpc/glog"
-	"github.com/gogrpc/kit/cast"
-	"github.com/gogrpc/kit"
 )
 
 //校验渠道id和来源，并写入context
@@ -65,7 +65,7 @@ func MyErrorHandle() echo.MiddlewareFunc {
 			err := next(c)
 
 			if err != nil && strings.Contains(err.Error(), "rpc error") {
-				msg := "[内部错误]，"+c.Path()+"，"+err.Error()
+				msg := "[内部错误]，" + c.Path() + "，" + err.Error()
 				glog.Error(msg)
 				kit.Alert(msg)
 				c.Error(errors.New("内部错误"))

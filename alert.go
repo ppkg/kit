@@ -1,7 +1,8 @@
-package rp_kit
+package kit
 
 import (
 	"encoding/json"
+
 	"github.com/gogrpc/glog"
 	kitHttp "github.com/gogrpc/kit/http"
 	"github.com/limitedlee/microservice/common/config"
