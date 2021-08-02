@@ -7,9 +7,9 @@ import (
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
+	"github.com/gogrpc/glog"
+	"github.com/gogrpc/kit/cast"
 	"github.com/limitedlee/microservice/common"
-	"github.com/maybgit/glog"
-	"github.com/tricobbler/rp-kit/cast"
 )
 
 type DBEngine struct {

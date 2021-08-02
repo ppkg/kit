@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/maybgit/glog"
+	"github.com/gogrpc/glog"
 	"github.com/shopspring/decimal"
 )
 

@@ -2,9 +2,9 @@ package rp_kit
 
 import (
 	"encoding/json"
+	"github.com/gogrpc/glog"
+	kitHttp "github.com/gogrpc/kit/http"
 	"github.com/limitedlee/microservice/common/config"
-	"github.com/maybgit/glog"
-	kitHttp "github.com/tricobbler/rp-kit/http"
 )
 
 func Alert(content string) {
