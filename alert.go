@@ -3,9 +3,9 @@ package kit
 import (
 	"encoding/json"
 
-	"github.com/gogrpc/glog"
-	kitHttp "github.com/gogrpc/kit/http"
 	"github.com/limitedlee/microservice/common/config"
+	"github.com/ppkg/glog"
+	kitHttp "github.com/ppkg/kit/http"
 )
 
 func Alert(content string) {

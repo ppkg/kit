@@ -1,6 +1,6 @@
 package kit
 
-import "github.com/gogrpc/kit/cast"
+import "github.com/ppkg/kit/cast"
 
 //查询值是否在切片存在
 func InSlice(value interface{}, list interface{}) bool {
