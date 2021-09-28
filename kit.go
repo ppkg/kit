@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/ppkg/glog"
+	"github.com/maybgit/glog"
 )
 
 var (

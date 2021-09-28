@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/limitedlee/microservice/common/config"
-	"github.com/ppkg/glog"
+	"github.com/maybgit/glog"
 	kitHttp "github.com/ppkg/kit/http"
 )
 

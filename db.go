@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	"github.com/limitedlee/microservice/common"
-	"github.com/ppkg/glog"
+	"github.com/maybgit/glog"
 	"github.com/ppkg/kit/cast"
 )
 

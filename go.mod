@@ -13,6 +13,6 @@ require (
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/limitedlee/microservice v0.1.0
-	github.com/ppkg/glog v0.0.0-20210823095502-427659edeb41 // indirect
+	github.com/maybgit/glog v0.0.0-20210928064228-9506732eb074 // indirect
 	github.com/shopspring/decimal v1.2.0
 )

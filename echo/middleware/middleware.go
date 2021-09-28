@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/ppkg/glog"
+	"github.com/maybgit/glog"
 	"github.com/ppkg/kit"
 	"github.com/ppkg/kit/cast"
 )
